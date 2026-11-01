@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>NextoQ — Queue Management System</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+<!-- ════════════════════════════════════════
+     SCREEN: HOME
+     Opened manually. QR scan bypasses this
+     and goes straight to screen-serviceinfo.
+════════════════════════════════════════ -->
+<div id="screen-home" class="screen active">
+  <div class="blue-bg">
+    <div class="home-card">
+      <div class="nextoq-logo">
+          <img src="images/LIGHTMODE.png" alt="NextoQ Logo" width="200" />
+      </div>
+      <p class="home-subtitle">Smart Queue Management System</p>
+
+      <button class="btn-blue btn-lg" onclick="App.goTo('screen-services')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
+        </svg>
+        Browse Services
+      </button>
+      <p class="home-scan-hint">
+        Scan the QR code at any service counter.<br/>
+        Keep your phone open, the queue page will appear directly.
+      </p>
+
+      <div class="home-quick-links">
+        <button class="quick-link-btn" onclick="App.goTo('screen-services')">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
+          </svg>
+          <span>Services</span>
+        </button>
+        <button class="quick-link-btn" onclick="App.openHistory()">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+          </svg>
+          <span>History</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-nav">
+    <button class="nav-btn active" onclick="App.goTo('screen-services')">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+        <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
+      </svg>
+      <span>Services</span>
+    </button>
+    <button class="nav-btn" onclick="App.goTo('screen-services')">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+        <circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 1 0-16 0"/>
+      </svg>
+      <span>Join</span>
+    </button>
+    <button class="nav-btn" onclick="App.openHistory()">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+        <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+      </svg>
+      <span>Track</span>
+    </button>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════
+     SCREEN: SERVICE INFO
+     ▸ User lands here after scanning QR code
+       URL example: index.html?dept=L01
+     ▸ Shows status, waiting count, est. wait,
+       now serving number
+     ▸ "Join Queue Now" → screen-join
+════════════════════════════════════════ -->
+<div id="screen-serviceinfo" class="screen">
+  <div class="blue-bg si-bg">
+
+    <button class="back-link white top-bar-back" onclick="App.goTo('screen-services')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+      Back
+    </button>
+
+    <div class="sinfo-card">
+
+      <!-- Blue gradient header -->
+      <div class="sinfo-card-top">
+        <span class="sinfo-code-badge" id="si-code">L01</span>
+        <h2 class="sinfo-title" id="si-name">Library Services</h2>
+        <p class="sinfo-loc">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.75)" stroke-width="2">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+          </svg>
+          <span id="si-location">M. Kamal Hassan Library, IIUM</span>
+        </p>
+      </div>
+
+      <!-- Open/Closed status bar -->
+      <div class="sinfo-status-bar" id="si-status-bar">
+        <span class="sinfo-open-dot" id="si-dot"></span>
+        <span class="sinfo-open-text" id="si-status-text">OPEN NOW</span>
+      </div>
+
+      <!-- Stats grid -->
+      <div class="sinfo-stats">
+        <div class="sinfo-stat blue-tint">
+          <div class="sinfo-stat-icon blue-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3b5bdb" stroke-width="1.8">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+          </div>
+          <div class="sinfo-stat-val" id="si-waiting">3</div>
+          <div class="sinfo-stat-lbl">People Waiting</div>
+        </div>
+        <div class="sinfo-stat orange-tint">
+          <div class="sinfo-stat-icon orange-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e8630a" stroke-width="1.8">
+              <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+            </svg>
+          </div>
+          <div class="sinfo-stat-val" id="si-wait">~10m</div>
+          <div class="sinfo-stat-lbl">Est. Wait Time</div>
+        </div>
+      </div>
+
+      <!-- Now Serving -->
+      <div class="sinfo-now-serving">
+        <p class="sinfo-ns-label">Now Serving</p>
+        <p class="sinfo-ns-val" id="si-now">L045</p>
+      </div>
+
+      <!-- Join CTA -->
+      <div class="sinfo-cta">
+        <button class="btn-blue btn-lg" id="si-join-btn" onclick="App.goTo('screen-join')">
+          Join Queue Now
+        </button>
+        <button class="back-link" style="justify-content:center;width:100%;margin-top:10px;" onclick="App.goTo('screen-services')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
+          Scan Another Code
+        </button>
+      </div>
+
+    </div><!-- /.sinfo-card -->
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════
+     SCREEN: JOIN QUEUE — Fill in details
+     ▸ Full Name *, Matric *, Phone, Reason
+     ▸ "Submit & Join Queue" → screen-ticket
+════════════════════════════════════════ -->
+<div id="screen-join" class="screen light-bg">
+  <div class="page-header">
+    <button class="icon-back" onclick="App.goTo('screen-serviceinfo')">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+    </button>
+    <div>
+      <h2 class="page-header-title">Join Queue</h2>
+      <p class="page-header-sub" id="join-service-name">Library Services</p>
+    </div>
+  </div>
+
+  <div class="join-body">
+    <div class="join-form-card">
+      <h3 class="join-form-title">Fill in Your Details</h3>
+      <p class="join-form-sub">Please provide accurate information to join the queue</p>
+
+      <div class="field-group">
+        <label class="field-label">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+          </svg>
+          Full Name <span class="req">*</span>
+        </label>
+        <input class="field-input" id="f-name" type="text" placeholder="e.g., Muhammad Arif bin Ahmad" autocomplete="name" />
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/>
+          </svg>
+          Matric Number / Staff ID <span class="req">*</span>
+        </label>
+        <input class="field-input" id="f-matric" type="text" placeholder="e.g., 2315270" />
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.35 2 2 0 0 1 3.6 1h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.6a16 16 0 0 0 5.55 5.55l.96-.96a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/>
+          </svg>
+          Phone Number <span class="opt">(Optional)</span>
+        </label>
+        <input class="field-input" id="f-phone" type="tel" placeholder="e.g., 014-2463842" autocomplete="tel" />
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+          </svg>
+          Purpose / Reason <span class="opt">(Optional)</span>
+        </label>
+        <textarea class="field-input field-textarea" id="f-reason" placeholder="e.g., Transcript request"></textarea>
+      </div>
+
+      <button class="btn-blue btn-lg" onclick="App.submitJoin()">Submit &amp; Join Queue</button>
+    </div>
+
+    <div class="join-info-box">
+      <p class="join-info-title">What happens next?</p>
+      <p class="join-info-item">✓ You'll receive a queue number immediately</p>
+      <p class="join-info-item">✓ Track your position in real-time</p>
+      <p class="join-info-item">✓ Get notified when it's almost your turn</p>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════
+     SCREEN: LIVE TICKET — Waiting (blue)
+════════════════════════════════════════ -->
+<div id="screen-ticket" class="screen">
+  <div class="blue-bg ticket-bg">
+
+    <div class="ticket-topbar">
+      <button class="back-link white" onclick="App.goTo('screen-home')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+        Back to Home
+      </button>
+    </div>
+
+    <div class="ticket-card">
+      <div class="ticket-top blue-ticket-top">
+        <p class="ticket-eyebrow">YOUR QUEUE NUMBER</p>
+        <div class="ticket-big-num" id="t-number">L01031</div>
+        <p class="ticket-loc">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="2">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+          </svg>
+          <span id="t-loc">Library Services · M. Kamal Hassan Library, IIUM/span>
+        </p>
+      </div>
+
+      <div class="ticket-tracking-bar">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3b5bdb" stroke-width="2" class="spin-icon">
+          <polyline points="23 4 23 10 17 10"/>
+          <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+        </svg>
+        Tracking Your Position
+      </div>
+
+      <div class="ticket-stats">
+        <div class="ticket-stat purple-tint">
+          <div class="tstat-icon purple-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="1.8">
+              <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/>
+              <polyline points="16 7 22 7 22 13"/>
+            </svg>
+          </div>
+          <div class="tstat-val" id="t-position">#5</div>
+          <div class="tstat-lbl">Your Position</div>
+        </div>
+        <div class="ticket-stat orange-tint">
+          <div class="tstat-icon orange-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e8630a" stroke-width="1.8">
+              <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+            </svg>
+          </div>
+          <div class="tstat-val" id="t-wait">~15m</div>
+          <div class="tstat-lbl">Est. Wait Time</div>
+        </div>
+      </div>
+
+      <div class="ticket-now-serving">
+        <p class="tns-label">Now Serving</p>
+        <p class="tns-val" id="t-now">L00026</p>
+      </div>
+
+      <div class="auto-update-bar">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#3b5bdb" stroke-width="2" class="spin-icon">
+          <polyline points="23 4 23 10 17 10"/>
+          <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+        </svg>
+        Auto-updating every 10 seconds
+      </div>
+
+      <div class="demo-controls">
+        <p class="demo-label">DEMO CONTROLS</p>
+        <div class="demo-row">
+          <button class="demo-btn outline" onclick="App.openHistory()">View History</button>
+          <button class="demo-btn red-outline" onclick="App.simulateAdvance()">Simulate Skip</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════
+     SCREEN: ALMOST YOUR TURN (orange)
+════════════════════════════════════════ -->
+<div id="screen-almost" class="screen">
+  <div class="orange-bg ticket-bg">
+
+    <div class="ticket-topbar">
+      <button class="back-link white" onclick="App.goTo('screen-home')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+        Back to Home
+      </button>
+    </div>
+
+    <div class="ticket-card">
+      <div class="ticket-top orange-ticket-top">
+        <p class="ticket-eyebrow">YOUR QUEUE NUMBER</p>
+        <div class="ticket-big-num" id="a-number">L01031</div>
+        <p class="ticket-loc">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="2">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+          </svg>
+          <span id="a-loc">Library Services</span>
+        </p>
+      </div>
+
+      <div class="ticket-tracking-bar orange-bar">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#e8630a" stroke-width="2">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+          <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
+        ALMOST YOUR TURN!
+      </div>
+
+      <div class="almost-box">
+        <div class="bell-emoji">🔔</div>
+        <h3 class="almost-title">Get Ready!</h3>
+        <p class="almost-sub">Please make your way to</p>
+        <p class="almost-counter" id="a-counter">Counter 2</p>
+      </div>
+
+      <div class="ticket-stats two-col">
+        <div class="ticket-stat light-grey">
+          <div class="tstat-lbl" style="margin-bottom:4px;">Now Serving</div>
+          <div class="tstat-val dark" id="a-now">L01030</div>
+        </div>
+        <div class="ticket-stat orange-tint">
+          <div class="tstat-lbl" style="margin-bottom:4px;">Your Position</div>
+          <div class="tstat-val orange-val">Next!</div>
+        </div>
+      </div>
+
+      <div class="demo-controls" style="margin-top:8px;">
+        <p class="demo-label">DEMO CONTROLS</p>
+        <button class="demo-btn red-outline" style="width:100%;" onclick="App.simulateAdvance()">▶ Simulate: My Number Called →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════
+     SCREEN: IT'S YOUR TURN (green)
+════════════════════════════════════════ -->
+<div id="screen-yourturn" class="screen">
+  <div class="green-bg ticket-bg">
+
+    <div class="ticket-topbar">
+      <button class="back-link white" onclick="App.goTo('screen-home')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+        Back to Home
+      </button>
+    </div>
+
+    <div class="ticket-card">
+      <div class="ticket-top green-ticket-top">
+        <p class="ticket-eyebrow">YOUR QUEUE NUMBER</p>
+        <div class="ticket-big-num" id="yt-number">L01031</div>
+        <p class="ticket-loc">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="2">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+          </svg>
+          <span id="yt-loc">Library Services</span>
+        </p>
+      </div>
+
+      <div class="ticket-tracking-bar green-bar">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/><path d="M8 12l2.5 2.5L16 9"/>
+        </svg>
+        IT'S YOUR TURN!
+      </div>
+
+      <div class="yourturn-box">
+        <div class="yourturn-check">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3">
+            <path d="M20 6L9 17l-5-5"/>
+          </svg>
+        </div>
+        <h3 class="yourturn-title">It's Your Turn!</h3>
+        <p class="yourturn-sub">Please proceed to</p>
+        <p class="yourturn-counter" id="yt-counter">Counter 2</p>
+        <p class="yourturn-warning">Please proceed within 3 minutes or your turn may be skipped</p>
+      </div>
+
+      <button class="btn-green btn-lg" onclick="App.markCompleted()">I'm Here! ✓</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════
+     SCREEN: TURN SKIPPED (red)
+════════════════════════════════════════ -->
+<div id="screen-skipped" class="screen light-bg">
+  <button class="top-left-light" onclick="App.goTo('screen-home')">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M19 12H5M12 19l-7-7 7-7"/>
+    </svg>
+    Back to Home
+  </button>
+
+  <div class="skipped-card">
+    <div class="skipped-top">
+      <p class="ticket-eyebrow">YOUR QUEUE NUMBER</p>
+      <div class="ticket-big-num" id="sk-number">C01032</div>
+      <p class="ticket-loc">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="2">
+          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+        </svg>
+        <span id="sk-loc">Consultation Service</span>
+      </p>
+    </div>
+    <div class="skipped-body">
+      <div class="skipped-icon-box">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5">
+          <circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/>
+        </svg>
+      </div>
+      <h3 class="skipped-title">Turn Skipped</h3>
+      <p class="skipped-sub">You did not show up in time. Your turn was skipped.</p>
+      <button class="btn-blue btn-lg" onclick="App.rejoinQueue()">Rejoin Queue</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════
+     SCREEN: ALL DONE
+════════════════════════════════════════ -->
+<div id="screen-done" class="screen light-bg">
+  <button class="top-left-light" onclick="App.goTo('screen-home')">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M19 12H5M12 19l-7-7 7-7"/>
+    </svg>
+    Back to Home
+  </button>
+
+  <div class="done-card">
+    <div class="done-emoji">🎉</div>
+    <h2 class="done-title">All Done!</h2>
+    <p class="done-sub">Your service is complete. Thank you for using NextoQ.</p>
+
+    <div class="done-info-grid">
+      <div>
+        <p class="done-info-label">Queue Number</p>
+        <p class="done-info-val" id="done-num">L01031</p>
+      </div>
+      <div>
+        <p class="done-info-label">Service</p>
+        <p class="done-info-val" id="done-svc">Library Services</p>
+      </div>
+      <div style="grid-column:1/-1;">
+        <p class="done-info-label">Date</p>
+        <p class="done-info-val" id="done-date">May 16, 2026</p>
+      </div>
+    </div>
+
+    <button class="btn-blue btn-lg" onclick="App.goTo('screen-home')">Join Another Queue</button>
+    <button class="btn-grey btn-lg" onclick="App.openHistory()">View Queue History</button>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════
+     SCREEN: AVAILABLE SERVICES
+     ▸ Lists all departments with status badges
+     ▸ Open → "Join Queue"  |  Full/Closed → "View Details"
+════════════════════════════════════════ -->
+<div id="screen-services" class="screen light-bg">
+  <div class="page-header">
+    <button class="icon-back" onclick="App.goTo('screen-home')">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+    </button>
+    <div>
+      <h2 class="page-header-title">Available Services</h2>
+      <p class="page-header-sub">Browse all queue services</p>
+    </div>
+  </div>
+  <div class="services-grid" id="services-grid">
+    <!-- Injected by JS -->
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════
+     SCREEN: QUEUE HISTORY
+════════════════════════════════════════ -->
+<div id="screen-history" class="screen light-bg">
+  <div class="page-header">
+    <button class="icon-back" onclick="App.goTo('screen-home')">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+    </button>
+    <div style="flex:1;">
+      <h2 class="page-header-title">Queue History</h2>
+      <p class="page-header-sub">Track your past queue records</p>
+    </div>
+    <button class="clear-btn" onclick="App.clearHistory()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="3 6 5 6 21 6"/>
+        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+        <path d="M10 11v6M14 11v6M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+      </svg>
+      Clear All
+    </button>
+  </div>
+
+  <div class="history-body">
+    <div class="history-summary" id="history-summary"></div>
+
+    <div class="history-tabs" id="history-tabs">
+      <button class="htab active" data-filter="all"       onclick="App.filterHistory('all', this)">All (0)</button>
+      <button class="htab"        data-filter="completed" onclick="App.filterHistory('completed', this)">Completed (0)</button>
+      <button class="htab"        data-filter="waiting"   onclick="App.filterHistory('waiting', this)">In Progress (0)</button>
+      <button class="htab"        data-filter="skipped"   onclick="App.filterHistory('skipped', this)">Skipped (0)</button>
+    </div>
+
+    <div class="history-list" id="history-list"></div>
+
+    <div class="history-about">
+      <p class="about-title">About Queue History</p>
+      <p class="about-text">Your queue history is stored locally in your browser. It includes all your past queue entries with service details, timestamps, and completion status. This helps you track your service usage and provides a reference for future visits.</p>
+    </div>
+  </div>
+</div>
+
+
+<script src="app.js"></script>
+</body>
+</html>
